@@ -1,0 +1,5 @@
+{
+  "rewrites": [
+    { "source": "/", "destination": "/dosar_medical_interactiv.html" }
+  ]
+}
