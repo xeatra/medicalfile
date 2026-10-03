@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dosar Medical Interactiv (2018-2026)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #0f172a; }
+        .tag-mecanic { background-color: #ffedd5; color: #c2410c; border: 1px solid #fed7aa; }
+        .tag-reumato { background-color: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
+        .tag-alergii { background-color: #d1fae5; color: #047857; border: 1px solid #a7f3d0; }
+        .tag-gastro { background-color: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
+        .tag-metabolic { background-color: #f3e8ff; color: #6b21a8; border: 1px solid #e9d5ff; }
+        .btn-tab.active { background-color: #1e3a8a; color: #ffffff; box-shadow: 0 4px 12px rgba(30, 58, 138, 0.2); }
+    </style>
+</head>
+<body class="p-3 sm:p-6 lg:p-8">
+
+<div class="max-w-7xl mx-auto space-y-6">
+
+    <!-- Header Patient Card -->
+    <header class="bg-gradient-to-r from-blue-900 via-blue-800 to-indigo-900 text-white rounded-2xl p-6 sm:p-8 shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+            <div class="flex items-center gap-3">
+                <span class="text-3xl">🩺</span>
+                <h1 class="text-2xl sm:text-3xl font-bold tracking-tight">Dosar Medical Interactiv (2018 - 2026)</h1>
+            </div>
+            <p class="mt-2 text-blue-100 text-sm sm:text-base">
+                Pacient: <strong class="text-white">Patient</strong> | Vârstă: <strong>45 ani</strong> | 96 kg, 1.83 m (IMC: ~28.6)
+            </p>
+            <p class="text-xs text-blue-200 mt-1">
+                Istoric cheie: Astm bronșic alergic (stabil), Rinosinuzită cronică, Discopatie lombară L3-S1, Colon iritabil, H. pylori eradicat.
+            </p>
+        </div>
+        <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl px-4 py-3 text-right">
+            <span class="block text-xs uppercase tracking-wider text-blue-200 font-semibold">Total Documente</span>
+            <span class="text-2xl font-bold text-white">21 Bilanțuri & Investigatii</span>
+            <span class="block text-xs text-emerald-300 font-medium">Actualizat: 21 Septembrie 2026</span>
+        </div>
+    </header>
+
+    <!-- Main Navigation Bar -->
+    <nav class="flex gap-2 p-1.5 bg-white border border-slate-200 rounded-xl shadow-sm overflow-x-auto">
+        <button class="btn-tab active flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold transition" onclick="showTab('dosar', this)">
+            📑 Dosar & Bilanțuri
+        </button>
+        <button class="btn-tab flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold text-slate-600 hover:text-blue-900 transition" onclick="showTab('grafice', this)">
+            📊 Grafice de Evoluție (2018-2026)
+        </button>
+        <button class="btn-tab flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold text-slate-600 hover:text-blue-900 transition" onclick="showTab('vitaminaD', this)">
+            ☀️ Calculator Vitamina D3
+        </button>
+        <button class="btn-tab flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold text-slate-600 hover:text-blue-900 transition" onclick="showTab('jurnal', this)">
+            📝 Jurnal Monitorizare Simptome
+        </button>
+        <button class="btn-tab flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold text-slate-600 hover:text-blue-900 transition" onclick="showTab('ghidMedici', this)">
+            ❓ Ghid Consultații Medici
+        </button>
+    </nav>
+
+    <!-- ==================== TAB 1: DOSAR MEDICAL ==================== -->
+    <section id="tab-dosar" class="space-y-6">
+
+        <!-- Search and Quick Filter Box -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+            <div class="relative">
+                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400">🔍</span>
+                <input type="text" id="searchInput" onkeyup="filterSearch()" placeholder="Caută orice parametru, leziune sau an (ex: DFS70, L4-L5, Vitamina D, Colesterol, Polip, CK, 2026)..." 
+                       class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition">
+            </div>
+
+            <div class="flex flex-wrap gap-2 pt-1">
+                <button class="btn-filter active bg-blue-900 text-white px-3.5 py-1.5 rounded-lg text-xs font-medium transition" onclick="filterCategory('all', this)">Toate Categoriile</button>
+                <button class="btn-filter bg-slate-100 hover:bg-orange-100 text-slate-700 px-3.5 py-1.5 rounded-lg text-xs font-medium transition" onclick="filterCategory('mecanic', this)">🦴 Coloană & Mușchi (Mecanic)</button>
+                <button class="btn-filter bg-slate-100 hover:bg-sky-100 text-slate-700 px-3.5 py-1.5 rounded-lg text-xs font-medium transition" onclick="filterCategory('reumato', this)">🩸 Reumatologie & Autoimun</button>
+                <button class="btn-filter bg-slate-100 hover:bg-emerald-100 text-slate-700 px-3.5 py-1.5 rounded-lg text-xs font-medium transition" onclick="filterCategory('alergii', this)">🫁 Alergii, ORL & Plămâni</button>
+                <button class="btn-filter bg-slate-100 hover:bg-amber-100 text-slate-700 px-3.5 py-1.5 rounded-lg text-xs font-medium transition" onclick="filterCategory('gastro', this)">🫄 Gastro & Colon Iritabil</button>
+                <button class="btn-filter bg-slate-100 hover:bg-purple-100 text-slate-700 px-3.5 py-1.5 rounded-lg text-xs font-medium transition" onclick="filterCategory('metabolic', this)">⚡ Metabolic & Inimă</button>
+            </div>
+        </div>
+
+        <!-- Synthesis by 5 Pillars -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="cardsGrid">
+            
+            <div class="bg-white p-5 rounded-2xl border-l-4 border-l-orange-500 border border-slate-200 shadow-sm" data-category="mecanic">
+                <div class="flex justify-between items-start mb-2">
+                    <h3 class="font-bold text-slate-900 text-base">🦴 Cauză Mecanică (Spate)</h3>
+                    <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full tag-mecanic">DEMONSTRATĂ</span>
+                </div>
+                <ul class="text-xs text-slate-600 space-y-2">
+                    <li>• <strong>RMN 2024:</strong> Deborduri discale L3-L4, L4-L5, L5-S1 cu contact radicular L4/L5 și artroză posterioară.</li>
+                    <li>• <strong>RMN 2019 comparativ:</strong> Arăta doar rectitudine și hernii Schmorl fără deborduri.</li>
+                    <li>• <strong>Pumn drept (2025):</strong> Tendinită de extensor ulnar carp confirmată ecografic.</li>
+                    <li>• <strong>CK (Creatinkinază):</strong> 74 U/L în Sept 2026 (Absență totală de miozită / distrucție musculară).</li>
+                </ul>
+            </div>
+
+            <div class="bg-white p-5 rounded-2xl border-l-4 border-l-sky-500 border border-slate-200 shadow-sm" data-category="reumato">
+                <div class="flex justify-between items-start mb-2">
+                    <h3 class="font-bold text-slate-900 text-base">🩸 Reumatologie & Autoimun</h3>
+                    <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">EXCLUSĂ</span>
+                </div>
+                <ul class="text-xs text-slate-600 space-y-2">
+                    <li>• <strong>HLA-B27:</strong> Negativ reconfirmat (2020 și 2026).</li>
+                    <li>• <strong>Anti-CCP & Factor Reumatoid:</strong> Permanent negativi.</li>
+                    <li>• <strong>Profil ANA Extins:</strong> Toți negativ, cu excepția <em>DFS70 intens pozitiv izolat</em> (marker ce exclude bolile sistemice).</li>
+                    <li>• <strong>VSH & CRP:</strong> Constant minime în toți cei 8 ani (CRP &le; 0.17 mg/dL).</li>
+                </ul>
+            </div>
+
+            <div class="bg-white p-5 rounded-2xl border-l-4 border-l-emerald-500 border border-slate-200 shadow-sm" data-category="alergii">
+                <div class="flex justify-between items-start mb-2">
+                    <h3 class="font-bold text-slate-900 text-base">🫁 Alergii, ORL & Plămâni</h3>
+                    <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full tag-alergii">TEREN ATOPIC</span>
+                </div>
+                <ul class="text-xs text-slate-600 space-y-2">
+                    <li>• <strong>IgE Total:</strong> 284 UI/mL (crescut).</li>
+                    <li>• <strong>Alergeni pozitivi:</strong> Acarieni (D. pteronyssimus, D. farinae), praf de casă, graminee, câine.</li>
+                    <li>• <strong>CT Sinusuri (2021):</strong> Rinosinuzită cronică, îngroșare mucoasă maxilară/etmoidală, concha bullosa.</li>
+                    <li>• <strong>Astm bronșic:</strong> În remisie clinică fără crize în ultimii ani.</li>
+                </ul>
+            </div>
+
+            <div class="bg-white p-5 rounded-2xl border-l-4 border-l-amber-500 border border-slate-200 shadow-sm" data-category="gastro">
+                <div class="flex justify-between items-start mb-2">
+                    <h3 class="font-bold text-slate-900 text-base">🫄 Gastro & Digestiv</h3>
+                    <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full tag-gastro">COLON IRITABIL</span>
+                </div>
+                <ul class="text-xs text-slate-600 space-y-2">
+                    <li>• <strong>Meteorism abdominal / aerocolie:</strong> Descris marcant la toate ecografiile (sursă principală de balonare).</li>
+                    <li>• <strong>Helicobacter pylori:</strong> Pozitiv în 2018 -> Eradicat complet (Negativ în 2019 și 2026).</li>
+                    <li>• <strong>Colecist:</strong> Cudat, cu polip colesterolotic stabil de 3.2 - 3.9 mm și sludge biliar minor.</li>
+                    <li>• <strong>Ficat & Pancreas:</strong> Steatoză gr. I și infiltrat lipomatos.</li>
+                </ul>
+            </div>
+
+            <div class="bg-white p-5 rounded-2xl border-l-4 border-l-purple-500 border border-slate-200 shadow-sm" data-category="metabolic">
+                <div class="flex justify-between items-start mb-2">
+                    <h3 class="font-bold text-slate-900 text-base">⚡ Metabolic & Inimă</h3>
+                    <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full tag-metabolic">AMELIORAT</span>
+                </div>
+                <ul class="text-xs text-slate-600 space-y-2">
+                    <li>• <strong>Vitamina D (25-OH):</strong> A urcat spectaculos la <strong>44.6 ng/mL</strong> în Sept 2026 (de la 22.9 ng/mL).</li>
+                    <li>• <strong>Lipide (Sept 2026):</strong> Colesterol total scăzut la 180 mg/dL, LDL scăzut la 123 mg/dL, Trigliceride la 97 mg/dL.</li>
+                    <li>• <strong>Markeri CV avansați:</strong> Lipoproteina(a) excelentă (4.8 nmol/L), ApoB 0.92 g/L, Homocisteină 10.7 &micro;mol/L.</li>
+                    <li>• <strong>Rezistență la insulină:</strong> HOMA-IR 2.2 (rezistență timpurie persistentă pe fond de stres/greutate).</li>
+                </ul>
+            </div>
+
+            <div class="bg-white p-5 rounded-2xl border-l-4 border-l-indigo-600 border border-slate-200 shadow-sm" data-category="mecanic">
+                <div class="flex justify-between items-start mb-2">
+                    <h3 class="font-bold text-slate-900 text-base">🛡️ Excludere Afectare Neuromotorie</h3>
+                    <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">INFIRMAT</span>
+                </div>
+                <ul class="text-xs text-slate-600 space-y-2">
+                    <li>• <strong>Scleroză Laterală Amiotrofică (SLA):</strong> Exclusă complet de parametrii biologici și clinici.</li>
+                    <li>• <strong>CK (74 U/L) & LDH (147 U/L):</strong> Fără distrugere de fibre musculare.</li>
+                    <li>• <strong>Amorțeli / Picioare rigide:</strong> Cauzate de compresia mecanică lombară L4-L5 suprapusă pe miorelaxant și stres.</li>
+                </ul>
+            </div>
+
+        </div>
+
+        <!-- Chronological Record Feed -->
+        <div class="space-y-4">
+            <h2 class="text-lg font-bold text-slate-900 flex items-center justify-between">
+                <span>Cronologie Detaliată Investigatii (2018 - 2026)</span>
+                <span class="text-xs font-normal text-slate-500">Apasă pe orice panou pentru extindere</span>
+            </h2>
+
+            <div class="space-y-3" id="timelineCards">
+
+                <!-- 21 Septembrie 2026 -->
+                <div class="record-item bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm transition" data-cat="metabolic mecanic">
+                    <div class="p-4 sm:p-5 flex justify-between items-center cursor-pointer hover:bg-slate-50" onclick="toggleDetails(this)">
+                        <div class="flex items-center gap-3">
+                            <span class="px-2.5 py-1 bg-emerald-100 text-emerald-800 text-xs font-bold rounded-md">21.09.2026</span>
+                            <span class="font-semibold text-sm sm:text-base text-slate-900">Bilanț Lipidic, Vitamina D, HOMA-IR & Markeri CV Avansați</span>
+                        </div>
+                        <div class="flex gap-1.5">
+                            <span class="text-[11px] font-semibold px-2 py-0.5 rounded tag-metabolic">Metabolic</span>
+                            <span class="text-[11px] font-semibold px-2 py-0.5 rounded tag-mecanic">CK Normal</span>
+                        </div>
+                    </div>
+                    <div class="details-panel hidden px-5 pb-5 pt-2 border-t border-slate-100 bg-slate-50/50 space-y-3 text-xs sm:text-sm">
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                            <div class="p-2.5 bg-white border border-slate-200 rounded-lg"><span class="text-slate-500 block text-xs">Vitamina D (25-OH)</span><strong class="text-emerald-600 text-base">44.6 ng/mL</strong> (Optim)</div>
+                            <div class="p-2.5 bg-white border border-slate-200 rounded-lg"><span class="text-slate-500 block text-xs">Colesterol Total</span><strong class="text-emerald-600 text-base">180 mg/dL</strong> (&lt;200)</div>
+                            <div class="p-2.5 bg-white border border-slate-200 rounded-lg"><span class="text-slate-500 block text-xs">LDL Colesterol</span><strong class="text-amber-600 text-base">123 mg/dL</strong> (Scăzut de la 149)</div>
+                            <div class="p-2.5 bg-white border border-slate-200 rounded-lg"><span class="text-slate-500 block text-xs">Trigliceride</span><strong class="text-emerald-600 text-base">97.3 mg/dL</strong> (&lt;150)</div>
+                            <div class="p-2.5 bg-white border border-slate-200 rounded-lg"><span class="text-slate-500 block text-xs">Lipoproteina (a)</span><strong class="text-emerald-600 text-base">4.8 nmol/L</strong> (Risc minim)</div>
+                            <div class="p-2.5 bg-white border border-slate-200 rounded-lg"><span class="text-slate-500 block text-xs">Apolipoproteina B</span><strong class="text-emerald-600 text-base">0.92 g/L</strong> (Normal)</div>
+                            <div class="p-2.5 bg-white border border-slate-200 rounded-lg"><span class="text-slate-500 block text-xs">Creatinkinază (CK)</span><strong class="text-emerald-600 text-base">74 U/L</strong> (&le;308)</div>
+                            <div class="p-2.5 bg-white border border-slate-200 rounded-lg"><span class="text-slate-500 block text-xs">HOMA-IR / HbA1c</span><strong class="text-amber-600 text-base">2.2 / 5.52%</strong> (Rezistență timpurie)</div>
+                        </div>
+                        <p class="text-slate-700 bg-white p-3 rounded-lg border border-slate-200">
+                            <strong>Interpretare clinică:</strong> Răspuns terapeutic foarte bun. Suplimentarea cu Vitamina D3+K2 a adus nivelul la 44.6 ng/mL. Tratamentul hipolipemiant a scăzut colesterolul total la 180 mg/dL. Enzimele musculare (CK = 74 U/L) și hepatice (ALT 36.4, AST 24.1) confirmă toleranță organică excelentă.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- 14 Mai 2026 -->
+                <div class="record-item bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm transition" data-cat="metabolic mecanic">
+                    <div class="p-4 sm:p-5 flex justify-between items-center cursor-pointer hover:bg-slate-50" onclick="toggleDetails(this)">
+                        <div class="flex items-center gap-3">
+                            <span class="px-2.5 py-1 bg-slate-100 text-slate-800 text-xs font-bold rounded-md">14.05.2026</span>
+                            <span class="font-semibold text-sm sm:text-base text-slate-900">Consult Cardiologie, Eco Cord & Carotide, D-Dimeri & Troponină</span>
+                        </div>
+                        <div class="flex gap-1.5">
+                            <span class="text-[11px] font-semibold px-2 py-0.5 rounded tag-metabolic">Cardiologie</span>
+                        </div>
+                    </div>
+                    <div class="details-panel hidden px-5 pb-5 pt-2 border-t border-slate-100 bg-slate-50/50 space-y-3 text-xs sm:text-sm">
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                            <div class="p-2.5 bg-white border border-slate-200 rounded-lg"><span class="text-slate-500 block text-xs">Troponina I</span><strong class="text-emerald-600">&lt;0.01 &micro;g/L</strong> (Normal)</div>
+                            <div class="p-2.5 bg-white border border-slate-200 rounded-lg"><span class="text-slate-500 block text-xs">CK-MB</span><strong class="text-emerald-600">5 U/L</strong> (Normal)</div>
+                            <div class="p-2.5 bg-white border border-slate-200 rounded-lg"><span class="text-slate-500 block text-xs">D-Dimeri</span><strong class="text-emerald-600">327 &micro;g/L</strong> (&lt;630)</div>
+                            <div class="p-2.5 bg-white border border-slate-200 rounded-lg"><span class="text-slate-500 block text-xs">Fracție Ejecție (FE)</span><strong class="text-emerald-600">60 - 65%</strong> (Normal)</div>
+                        </div>
+                        <p class="text-slate-700 bg-white p-3 rounded-lg border border-slate-200">
+                            <strong>Consult Dr. Șerban Ana Maria:</strong> Eco cord normală, valve intacte, cavități normale. Eco Doppler carotide și vertebrale fără plăci de aterom, fluxuri simetrice. Recomandare: Sortis 40mg, Aspenter 100mg și dietă hipolipidică.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- 09 Martie 2026 -->
+                <div class="record-item bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm transition" data-cat="reumato mecanic">
+                    <div class="p-4 sm:p-5 flex justify-between items-center cursor-pointer hover:bg-slate-50" onclick="toggleDetails(this)">
+                        <div class="flex items-center gap-3">
+                            <span class="px-2.5 py-1 bg-slate-100 text-slate-800 text-xs font-bold rounded-md">09.03.2026</span>
+                            <span class="font-semibold text-sm sm:text-base text-slate-900">Bilanț Autoimun Extins (Profil ANA), HLA-B27, Anti-CCP</span>
+                        </div>
+                        <div class="flex gap-1.5">
+                            <span class="text-[11px] font-semibold px-2 py-0.5 rounded tag-reumato">Autoimun</span>
+                        </div>
+                    </div>
+                    <div class="details-panel hidden px-5 pb-5 pt-2 border-t border-slate-100 bg-slate-50/50 space-y-3 text-xs sm:text-sm">
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                            <div class="p-2.5 bg-white border border-slate-200 rounded-lg"><span class="text-slate-500 block text-xs">HLA-B27</span><strong class="text-emerald-600">NEGATIV</strong></div>
+                            <div class="p-2.5 bg-white border border-slate-200 rounded-lg"><span class="text-slate-500 block text-xs">Anti-CCP</span><strong class="text-emerald-600">&lt;8 U/mL</strong> (Negativ)</div>
+                            <div class="p-2.5 bg-white border border-slate-200 rounded-lg"><span class="text-slate-500 block text-xs">Complement C3 / C4</span><strong class="text-emerald-600">136 / 30.5 mg/dL</strong> (Normal)</div>
+                            <div class="p-2.5 bg-white border border-slate-200 rounded-lg"><span class="text-slate-500 block text-xs">Anti-DFS70</span><strong class="text-purple-600">INTENS POZITIV</strong></div>
+                        </div>
+                        <p class="text-slate-700 bg-white p-3 rounded-lg border border-slate-200">
+                            <strong>Semnificație DFS70 izolat:</strong> Prezența anticorpilor anti-DFS70 în absența oricăror alți anticorpi autoimuni specifici (dsDNA, Sm, SSA, SSB, Scl70 etc. toți negativi) este descrisă medical ca un factor de excludere a bolilor sistemice reumatice.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- 23 Ianuarie 2026 -->
+                <div class="record-item bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm transition" data-cat="metabolic gastro">
+                    <div class="p-4 sm:p-5 flex justify-between items-center cursor-pointer hover:bg-slate-50" onclick="toggleDetails(this)">
+                        <div class="flex items-center gap-3">
+                            <span class="px-2.5 py-1 bg-slate-100 text-slate-800 text-xs font-bold rounded-md">23.01.2026</span>
+                            <span class="font-semibold text-sm sm:text-base text-slate-900">Set Extins Biochimie, HOMA-IR, Vitamina D & Helicobacter Fecal</span>
+                        </div>
+                        <div class="flex gap-1.5">
+                            <span class="text-[11px] font-semibold px-2 py-0.5 rounded tag-metabolic">Metabolic</span>
+                            <span class="text-[11px] font-semibold px-2 py-0.5 rounded tag-gastro">Gastro</span>
+                        </div>
+                    </div>
+                    <div class="details-panel hidden px-5 pb-5 pt-2 border-t border-slate-100 bg-slate-50/50 space-y-3 text-xs sm:text-sm">
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                            <div class="p-2.5 bg-white border border-slate-200 rounded-lg"><span class="text-slate-500 block text-xs">Vitamina D (25-OH)</span><strong class="text-amber-600">22.9 ng/mL</strong> (Suboptimal)</div>
+                            <div class="p-2.5 bg-white border border-slate-200 rounded-lg"><span class="text-slate-500 block text-xs">H. pylori Fecal</span><strong class="text-emerald-600">NEGATIV</strong></div>
+                            <div class="p-2.5 bg-white border border-slate-200 rounded-lg"><span class="text-slate-500 block text-xs">CRP / VSH</span><strong class="text-emerald-600">0.11 mg/dL / 7 mm/h</strong></div>
+                            <div class="p-2.5 bg-white border border-slate-200 rounded-lg"><span class="text-slate-500 block text-xs">HOMA-IR</span><strong class="text-amber-600">2.0</strong> (Insulinorezistență timpurie)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 15 Septembrie 2025 -->
+                <div class="record-item bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm transition" data-cat="gastro">
+                    <div class="p-4 sm:p-5 flex justify-between items-center cursor-pointer hover:bg-slate-50" onclick="toggleDetails(this)">
+                        <div class="flex items-center gap-3">
+                            <span class="px-2.5 py-1 bg-slate-100 text-slate-800 text-xs font-bold rounded-md">15.09.2025</span>
+                            <span class="font-semibold text-sm sm:text-base text-slate-900">Ecografie Abdominală Generală</span>
+                        </div>
+                        <div class="flex gap-1.5">
+                            <span class="text-[11px] font-semibold px-2 py-0.5 rounded tag-gastro">Ecografie</span>
+                        </div>
+                    </div>
+                    <div class="details-panel hidden px-5 pb-5 pt-2 border-t border-slate-100 bg-slate-50/50 space-y-3 text-xs sm:text-sm">
+                        <p class="text-slate-700 bg-white p-3 rounded-lg border border-slate-200">
+                            <strong>Rezultat Dr. Pîrvu Violeta:</strong> Steatoză hepatică grad I, colecist cudat cu polip de 3.2 mm și puțin sludge biliar. Pancreas ușor lipomatos. Microlitiază renală bilaterală 2-3 mm. <strong>Marcată distensie aerică pe întregul cadru colic (meteorism abdominal sever)</strong> explicând senzația persistentă de balonare.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- 05 Septembrie 2025 -->
+                <div class="record-item bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm transition" data-cat="mecanic">
+                    <div class="p-4 sm:p-5 flex justify-between items-center cursor-pointer hover:bg-slate-50" onclick="toggleDetails(this)">
+                        <div class="flex items-center gap-3">
+                            <span class="px-2.5 py-1 bg-slate-100 text-slate-800 text-xs font-bold rounded-md">05.09.2025</span>
+                            <span class="font-semibold text-sm sm:text-base text-slate-900">Consult Ortopedie & Ecografie Pumn Drept</span>
+                        </div>
+                        <div class="flex gap-1.5">
+                            <span class="text-[11px] font-semibold px-2 py-0.5 rounded tag-mecanic">Ortopedie</span>
+                        </div>
+                    </div>
+                    <div class="details-panel hidden px-5 pb-5 pt-2 border-t border-slate-100 bg-slate-50/50 space-y-3 text-xs sm:text-sm">
+                        <p class="text-slate-700 bg-white p-3 rounded-lg border border-slate-200">
+                            <strong>Diagnostic Dr. Blaga Bogdan:</strong> Tendinită mușchi extensor ulnar al carpului pumn drept (colecție anecogenă în teacă, tendon îngroșat). Recomandare: orteză fixă 10-14 zile, kinetoterapie pumn, Vimovo și Clorzoxazonă la nevoie.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- 21 August 2025 -->
+                <div class="record-item bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm transition" data-cat="metabolic reumato">
+                    <div class="p-4 sm:p-5 flex justify-between items-center cursor-pointer hover:bg-slate-50" onclick="toggleDetails(this)">
+                        <div class="flex items-center gap-3">
+                            <span class="px-2.5 py-1 bg-slate-100 text-slate-800 text-xs font-bold rounded-md">21.08.2025</span>
+                            <span class="font-semibold text-sm sm:text-base text-slate-900">Bilanț Cortizol, Vitamina D, B12, HOMA-IR & Markeri Inflamație</span>
+                        </div>
+                        <div class="flex gap-1.5">
+                            <span class="text-[11px] font-semibold px-2 py-0.5 rounded tag-metabolic">Metabolic</span>
+                        </div>
+                    </div>
+                    <div class="details-panel hidden px-5 pb-5 pt-2 border-t border-slate-100 bg-slate-50/50 space-y-3 text-xs sm:text-sm">
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                            <div class="p-2.5 bg-white border border-slate-200 rounded-lg"><span class="text-slate-500 block text-xs">Vitamina D</span><strong class="text-emerald-600">34.5 ng/mL</strong> (Optim)</div>
+                            <div class="p-2.5 bg-white border border-slate-200 rounded-lg"><span class="text-slate-500 block text-xs">Cortizol a.m.</span><strong class="text-amber-600">580 nmol/L</strong> (Ușor crescut pe fond de stres)</div>
+                            <div class="p-2.5 bg-white border border-slate-200 rounded-lg"><span class="text-slate-500 block text-xs">HOMA-IR</span><strong class="text-amber-600">2.1</strong></div>
+                            <div class="p-2.5 bg-white border border-slate-200 rounded-lg"><span class="text-slate-500 block text-xs">Vitamina B12 / Acid Folic</span><strong class="text-emerald-600">470 pg/mL / 7.64 ng/mL</strong></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 21 Martie 2024 -->
+                <div class="record-item bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm transition" data-cat="mecanic">
+                    <div class="p-4 sm:p-5 flex justify-between items-center cursor-pointer hover:bg-slate-50" onclick="toggleDetails(this)">
+                        <div class="flex items-center gap-3">
+                            <span class="px-2.5 py-1 bg-orange-100 text-orange-900 text-xs font-bold rounded-md">21.03.2024</span>
+                            <span class="font-semibold text-sm sm:text-base text-slate-900">RMN Coloană Lombară Nativ (Cheie pentru Cauza Durerilor)</span>
+                        </div>
+                        <div class="flex gap-1.5">
+                            <span class="text-[11px] font-semibold px-2 py-0.5 rounded tag-mecanic">RMN Coloană</span>
+                        </div>
+                    </div>
+                    <div class="details-panel hidden px-5 pb-5 pt-2 border-t border-slate-100 bg-slate-50/50 space-y-3 text-xs sm:text-sm">
+                        <p class="text-slate-700 bg-white p-3 rounded-lg border border-slate-200">
+                            <strong>Rezultat Dr. Cristache Ioan Andrei:</strong> Rectitudine lombară. Modificări degenerative disco-vertebrale (osteofite, deshidratări discale, artroză articulară posterioară cu hipertrofii de ligamente galbene).<br>
+                            <strong>Deborduri discale circumferentiale etajate:</strong><br>
+                            • L3-L4 cu ușor contact la recesurile laterale cu rădăcinile L4;<br>
+                            • L4-L5 cu ușor contact la recesurile laterale cu rădăcinile L5;<br>
+                            • L5-S1 cu ușor contact foraminal bilateral cu rădăcinile L5.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- 20 Noiembrie 2023 -->
+                <div class="record-item bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm transition" data-cat="gastro">
+                    <div class="p-4 sm:p-5 flex justify-between items-center cursor-pointer hover:bg-slate-50" onclick="toggleDetails(this)">
+                        <div class="flex items-center gap-3">
+                            <span class="px-2.5 py-1 bg-slate-100 text-slate-800 text-xs font-bold rounded-md">20.11.2023</span>
+                            <span class="font-semibold text-sm sm:text-base text-slate-900">Ecografie Abdominală Generală</span>
+                        </div>
+                        <div class="flex gap-1.5">
+                            <span class="text-[11px] font-semibold px-2 py-0.5 rounded tag-gastro">Gastro</span>
+                        </div>
+                    </div>
+                    <div class="details-panel hidden px-5 pb-5 pt-2 border-t border-slate-100 bg-slate-50/50 space-y-3 text-xs sm:text-sm">
+                        <p class="text-slate-700 bg-white p-3 rounded-lg border border-slate-200">
+                            Steatoză hepatică gr. I, Colecist cudat cu imagine polipoidă de 3.5 mm, Pancreas lipomatos, Microlitiază renală bilaterală max 3 mm, Marcata distensie aerică pe tot cadrul colic (meteorism).
+                        </p>
+                    </div>
+                </div>
+
+                <!-- 15 Aprilie 2022 -->
+                <div class="record-item bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm transition" data-cat="alergii">
+                    <div class="p-4 sm:p-5 flex justify-between items-center cursor-pointer hover:bg-slate-50" onclick="toggleDetails(this)">
+                        <div class="flex items-center gap-3">
+                            <span class="px-2.5 py-1 bg-slate-100 text-slate-800 text-xs font-bold rounded-md">15.04.2022</span>
+                            <span class="font-semibold text-sm sm:text-base text-slate-900">Radiografie Cardiopulmonară</span>
+                        </div>
+                        <div class="flex gap-1.5">
+                            <span class="text-[11px] font-semibold px-2 py-0.5 rounded tag-alergii">Pulmonar</span>
+                        </div>
+                    </div>
+                    <div class="details-panel hidden px-5 pb-5 pt-2 border-t border-slate-100 bg-slate-50/50 space-y-3 text-xs sm:text-sm">
+                        <p class="text-slate-700 bg-white p-3 rounded-lg border border-slate-200">
+                            Desen pulmonar accentuat perihilar și infrahilar bilateral de aspect liniar pe interstițiu. Calcificări hilare bilaterale (sechelare, fără procese evolutive). Sinusuri costodiafragmatice libere.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- 08 Martie 2021 -->
+                <div class="record-item bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm transition" data-cat="alergii metabolic">
+                    <div class="p-4 sm:p-5 flex justify-between items-center cursor-pointer hover:bg-slate-50" onclick="toggleDetails(this)">
+                        <div class="flex items-center gap-3">
+                            <span class="px-2.5 py-1 bg-slate-100 text-slate-800 text-xs font-bold rounded-md">08.03.2021</span>
+                            <span class="font-semibold text-sm sm:text-base text-slate-900">Consult Endocrinologie & Ecografie Tiroidă</span>
+                        </div>
+                        <div class="flex gap-1.5">
+                            <span class="text-[11px] font-semibold px-2 py-0.5 rounded tag-alergii">ORL</span>
+                        </div>
+                    </div>
+                    <div class="details-panel hidden px-5 pb-5 pt-2 border-t border-slate-100 bg-slate-50/50 space-y-3 text-xs sm:text-sm">
+                        <p class="text-slate-700 bg-white p-3 rounded-lg border border-slate-200">
+                            Tiroidă normală ecografic și funcțional (TSH 1.45, FT4 15.2, ATPO &lt;3). Adenopatii latero-cervicale cu caracter reactiv/inflamator pe fond de stres și rinosinuzită.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- 04 Februarie 2021 -->
+                <div class="record-item bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm transition" data-cat="alergii">
+                    <div class="p-4 sm:p-5 flex justify-between items-center cursor-pointer hover:bg-slate-50" onclick="toggleDetails(this)">
+                        <div class="flex items-center gap-3">
+                            <span class="px-2.5 py-1 bg-emerald-100 text-emerald-800 text-xs font-bold rounded-md">04.02.2021</span>
+                            <span class="font-semibold text-sm sm:text-base text-slate-900">Profil Alergologic Mixt & IgE Total</span>
+                        </div>
+                        <div class="flex gap-1.5">
+                            <span class="text-[11px] font-semibold px-2 py-0.5 rounded tag-alergii">Alergii</span>
+                        </div>
+                    </div>
+                    <div class="details-panel hidden px-5 pb-5 pt-2 border-t border-slate-100 bg-slate-50/50 space-y-3 text-xs sm:text-sm">
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                            <div class="p-2.5 bg-white border border-slate-200 rounded-lg"><span class="text-slate-500 block text-xs">IgE Total</span><strong class="text-purple-700">284 UI/mL</strong> (Crescut)</div>
+                            <div class="p-2.5 bg-white border border-slate-200 rounded-lg"><span class="text-slate-500 block text-xs">D. farinae (acarieni)</span><strong class="text-purple-700">16.36 UI/mL</strong> (Clasa 3)</div>
+                            <div class="p-2.5 bg-white border border-slate-200 rounded-lg"><span class="text-slate-500 block text-xs">D. pteronyssinus</span><strong class="text-purple-700">9.83 UI/mL</strong> (Clasa 3)</div>
+                            <div class="p-2.5 bg-white border border-slate-200 rounded-lg"><span class="text-slate-500 block text-xs">Polen Graminee (gX1)</span><strong class="text-amber-600">1.17 - 1.88 kU/L</strong></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 19 Ianuarie 2021 -->
+                <div class="record-item bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm transition" data-cat="alergii">
+                    <div class="p-4 sm:p-5 flex justify-between items-center cursor-pointer hover:bg-slate-50" onclick="toggleDetails(this)">
+                        <div class="flex items-center gap-3">
+                            <span class="px-2.5 py-1 bg-slate-100 text-slate-800 text-xs font-bold rounded-md">19.01.2021</span>
+                            <span class="font-semibold text-sm sm:text-base text-slate-900">CT Sinusuri Nativ</span>
+                        </div>
+                        <div class="flex gap-1.5">
+                            <span class="text-[11px] font-semibold px-2 py-0.5 rounded tag-alergii">CT ORL</span>
+                        </div>
+                    </div>
+                    <div class="details-panel hidden px-5 pb-5 pt-2 border-t border-slate-100 bg-slate-50/50 space-y-3 text-xs sm:text-sm">
+                        <p class="text-slate-700 bg-white p-3 rounded-lg border border-slate-200">
+                            <strong>Diagnostic Prof. Dr. Zaharia Constantin:</strong> Modificări de rinosinuzită cronică. Îngroșare de mucoasă de max 0.6 cm sinus maxilar și celule etmoidale bilateral. Concha bullosa bilateral, hipertrofie cornete nazale.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- 13 Octombrie 2020 -->
+                <div class="record-item bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm transition" data-cat="gastro">
+                    <div class="p-4 sm:p-5 flex justify-between items-center cursor-pointer hover:bg-slate-50" onclick="toggleDetails(this)">
+                        <div class="flex items-center gap-3">
+                            <span class="px-2.5 py-1 bg-slate-100 text-slate-800 text-xs font-bold rounded-md">13.10.2020</span>
+                            <span class="font-semibold text-sm sm:text-base text-slate-900">Consult Gastroenterologie & Ecografie Abdominală</span>
+                        </div>
+                        <div class="flex gap-1.5">
+                            <span class="text-[11px] font-semibold px-2 py-0.5 rounded tag-gastro">Gastroenterologie</span>
+                        </div>
+                    </div>
+                    <div class="details-panel hidden px-5 pb-5 pt-2 border-t border-slate-100 bg-slate-50/50 space-y-3 text-xs sm:text-sm">
+                        <p class="text-slate-700 bg-white p-3 rounded-lg border border-slate-200">
+                            <strong>Dr. Podină Nicoleta:</strong> Diagnostic de Sindrom de Colon Iritabil, Steatoză hepatică gr I, Polip colecist 3.4 mm. APP: Gastrită H. pylori tratată în 2018. Recomandat: regim igieno-dietetic fără crudități în exces, Spasmomen la crampe.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- 10 Ianuarie 2020 -->
+                <div class="record-item bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm transition" data-cat="reumato mecanic">
+                    <div class="p-4 sm:p-5 flex justify-between items-center cursor-pointer hover:bg-slate-50" onclick="toggleDetails(this)">
+                        <div class="flex items-center gap-3">
+                            <span class="px-2.5 py-1 bg-slate-100 text-slate-800 text-xs font-bold rounded-md">10.01.2020</span>
+                            <span class="font-semibold text-sm sm:text-base text-slate-900">Evaluare Reumatică Timpurie (HLA-B27, FR, CRP)</span>
+                        </div>
+                        <div class="flex gap-1.5">
+                            <span class="text-[11px] font-semibold px-2 py-0.5 rounded tag-reumato">Reumato</span>
+                        </div>
+                    </div>
+                    <div class="details-panel hidden px-5 pb-5 pt-2 border-t border-slate-100 bg-slate-50/50 space-y-3 text-xs sm:text-sm">
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                            <div class="p-2.5 bg-white border border-slate-200 rounded-lg"><span class="text-slate-500 block text-xs">HLA-B27</span><strong class="text-emerald-600">NEGATIV</strong></div>
+                            <div class="p-2.5 bg-white border border-slate-200 rounded-lg"><span class="text-slate-500 block text-xs">Factor Reumatoid</span><strong class="text-emerald-600">&lt;10 UI/mL</strong></div>
+                            <div class="p-2.5 bg-white border border-slate-200 rounded-lg"><span class="text-slate-500 block text-xs">Proteina C Reactivă</span><strong class="text-emerald-600">0.17 mg/dL</strong></div>
+                            <div class="p-2.5 bg-white border border-slate-200 rounded-lg"><span class="text-slate-500 block text-xs">VSH</span><strong class="text-emerald-600">13 mm/h</strong></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 09 August 2019 -->
+                <div class="record-item bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm transition" data-cat="mecanic">
+                    <div class="p-4 sm:p-5 flex justify-between items-center cursor-pointer hover:bg-slate-50" onclick="toggleDetails(this)">
+                        <div class="flex items-center gap-3">
+                            <span class="px-2.5 py-1 bg-slate-100 text-slate-800 text-xs font-bold rounded-md">09.08.2019</span>
+                            <span class="font-semibold text-sm sm:text-base text-slate-900">RMN Coloană Lombară Nativ (Inițial)</span>
+                        </div>
+                        <div class="flex gap-1.5">
+                            <span class="text-[11px] font-semibold px-2 py-0.5 rounded tag-mecanic">RMN Coloană</span>
+                        </div>
+                    </div>
+                    <div class="details-panel hidden px-5 pb-5 pt-2 border-t border-slate-100 bg-slate-50/50 space-y-3 text-xs sm:text-sm">
+                        <p class="text-slate-700 bg-white p-3 rounded-lg border border-slate-200">
+                            <strong>Dr. Masoud Brândușa:</strong> Reducerea lordozei lombare fiziologice. Fără deborduri sau hernii discale la acel moment. Doar mici hernii intraspongioase (Schmorl) etajate T12-L5.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- 08 Octombrie 2018 -->
+                <div class="record-item bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm transition" data-cat="gastro metabolic">
+                    <div class="p-4 sm:p-5 flex justify-between items-center cursor-pointer hover:bg-slate-50" onclick="toggleDetails(this)">
+                        <div class="flex items-center gap-3">
+                            <span class="px-2.5 py-1 bg-slate-100 text-slate-800 text-xs font-bold rounded-md">08.10.2018</span>
+                            <span class="font-semibold text-sm sm:text-base text-slate-900">Diagnosticare Helicobacter Pylori & Bilanț Lipidic</span>
+                        </div>
+                        <div class="flex gap-1.5">
+                            <span class="text-[11px] font-semibold px-2 py-0.5 rounded tag-gastro">H. pylori</span>
+                        </div>
+                    </div>
+                    <div class="details-panel hidden px-5 pb-5 pt-2 border-t border-slate-100 bg-slate-50/50 space-y-3 text-xs sm:text-sm">
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                            <div class="p-2.5 bg-white border border-slate-200 rounded-lg"><span class="text-slate-500 block text-xs">H. pylori Fecal (2018)</span><strong class="text-rose-600">POZITIV (Ulterior eradicat)</strong></div>
+                            <div class="p-2.5 bg-white border border-slate-200 rounded-lg"><span class="text-slate-500 block text-xs">Trigliceride</span><strong class="text-amber-600">186.6 mg/dL</strong></div>
+                            <div class="p-2.5 bg-white border border-slate-200 rounded-lg"><span class="text-slate-500 block text-xs">LDL Colesterol</span><strong class="text-amber-600">163.9 mg/dL</strong></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </section>
+
+    <!-- ==================== TAB 2: GRAFICE DE EVOLUTIE ==================== -->
+    <section id="tab-grafice" class="tab-content hidden space-y-6">
+        <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 text-xs sm:text-sm text-blue-900">
+            💡 <strong>Evoluție paraclinică:</strong> Graficele reflectă istoricul analizelor între 2018 și 21 Septembrie 2026. Se observă saltul Vitaminei D la 44.6 ng/mL și scăderea importantă a fracțiunilor de colesterol.
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                <h3 class="font-bold text-slate-800 text-sm mb-3">☀️ Evoluție 25-OH-Vitamina D (ng/mL)</h3>
+                <div class="h-64"><canvas id="chartVitD"></canvas></div>
+            </div>
+
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                <h3 class="font-bold text-slate-800 text-sm mb-3">⚡ Indice HOMA-IR (Rezistență la Insulină)</h3>
+                <div class="h-64"><canvas id="chartHoma"></canvas></div>
+            </div>
+
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                <h3 class="font-bold text-slate-800 text-sm mb-3">🩸 Colesterol Total & LDL Colesterol (mg/dL)</h3>
+                <div class="h-64"><canvas id="chartLipide"></canvas></div>
+            </div>
+
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                <h3 class="font-bold text-slate-800 text-sm mb-3">🛡️ Markeri Inflamatori (VSH & CRP - Constant Minime)</h3>
+                <div class="h-64"><canvas id="chartInflamatie"></canvas></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== TAB 3: CALCULATOR VITAMINA D ==================== -->
+    <section id="tab-vitaminaD" class="tab-content hidden max-w-2xl mx-auto">
+        <div class="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-5">
+            <div>
+                <h2 class="text-xl font-bold text-slate-900">☀️ Calculator Dozaj Vitamina D3</h2>
+                <p class="text-xs sm:text-sm text-slate-500 mt-1">
+                    Valoarea actuală din 21 Septembrie 2026 este <strong class="text-emerald-600">44.6 ng/mL</strong> (nivel optim atins).
+                </p>
+            </div>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Valoare 25-OH-Vitamina D curentă (ng/mL):</label>
+                    <input type="number" id="calc-current" value="44.6" step="0.1" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Nivel Țintă Dorit (ng/mL):</label>
+                    <select id="calc-target" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm">
+                        <option value="45" selected>45 ng/mL (Menținere Nivel Optim)</option>
+                        <option value="50">50 ng/mL (Optim Superior)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Greutate Corporală (kg):</label>
+                    <input type="number" id="calc-weight" value="96" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm">
+                </div>
+
+                <button onclick="computeVitD()" class="w-full bg-blue-900 hover:bg-blue-800 text-white font-semibold py-3 rounded-xl transition text-sm">
+                    Calculează Recomandarea de Menținere
+                </button>
+            </div>
+
+            <div id="calc-output" class="p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-xs sm:text-sm text-emerald-900 space-y-2">
+                <p><strong>Status Actual:</strong> Nivelul dumneavoastră este deja <strong>OPTIM (44.6 ng/mL)</strong>!</p>
+                <p>• <strong>Doză de Menținere recomandată (sezon rece):</strong> 1.000 UI - 2.000 UI / zi (sau 10.000 - 14.000 UI pe săptămână) pentru a nu mai coborî la 22.9 ng/mL în lunile de iarnă.</p>
+                <p>• Continuați asocierea cu Vitamina K2 pentru ghidarea calciului în oase.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== TAB 4: JURNAL PERSONAL SIMPTOME ==================== -->
+    <section id="tab-jurnal" class="tab-content hidden space-y-6">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+            <!-- Log Form -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                <h3 class="text-base font-bold text-slate-900">📝 Înregistrează Simptomele de Azi</h3>
+                
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Data:</label>
+                    <input type="date" id="logDate" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg text-xs sm:text-sm">
+                </div>
+
+                <div>
+                    <div class="flex justify-between text-xs font-semibold text-slate-700 mb-1">
+                        <span>Durere / Rigiditate Lombară (0-10):</span>
+                        <span id="lblBack" class="text-orange-600 font-bold">3</span>
+                    </div>
+                    <input type="range" id="rngBack" min="0" max="10" value="3" oninput="document.getElementById('lblBack').innerText=this.value" class="w-full accent-orange-600">
+                </div>
+
+                <div>
+                    <div class="flex justify-between text-xs font-semibold text-slate-700 mb-1">
+                        <span>Balonare / Meteorism Abdominal (0-10):</span>
+                        <span id="lblBloat" class="text-amber-600 font-bold">2</span>
+                    </div>
+                    <input type="range" id="rngBloat" min="0" max="10" value="2" oninput="document.getElementById('lblBloat').innerText=this.value" class="w-full accent-amber-600">
+                </div>
+
+                <div>
+                    <div class="flex justify-between text-xs font-semibold text-slate-700 mb-1">
+                        <span>Amorțeală / Picioare „tari” (0-10):</span>
+                        <span id="lblLegs" class="text-purple-600 font-bold">2</span>
+                    </div>
+                    <input type="range" id="rngLegs" min="0" max="10" value="2" oninput="document.getElementById('lblLegs').innerText=this.value" class="w-full accent-purple-600">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Note (Factori: efort, alimente, stres, vreme):</label>
+                    <input type="text" id="logNotes" placeholder="ex: Stat mult pe scaun, vreme umedă, exerciții kineto făcute..." class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs sm:text-sm">
+                </div>
+
+                <button onclick="addJournalEntry()" class="w-full bg-blue-900 hover:bg-blue-800 text-white font-semibold py-2.5 rounded-xl transition text-sm">
+                    Salvează în Jurnalul Local
+                </button>
+            </div>
+
+            <!-- Stored Logs -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                <div>
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-base font-bold text-slate-900">📋 Istoric Înregistrări Recente</h3>
+                        <button onclick="clearJournal()" class="text-xs text-rose-600 hover:underline">Șterge tot</button>
+                    </div>
+                    <div id="journalEntriesList" class="space-y-2.5 max-h-96 overflow-y-auto pr-1">
+                        <!-- Dynamic Entries -->
+                    </div>
+                </div>
+                <p class="text-[11px] text-slate-400 mt-4">
+                    * Datele sunt salvate exclusiv în browserul dumneavoastră și rămân disponibile la reîncărcarea paginii.
+                </p>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ==================== TAB 5: GHID MEDICI ==================== -->
+    <section id="tab-ghidMedici" class="tab-content hidden space-y-4">
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+            <h2 class="text-lg font-bold text-slate-900">❓ Întrebări Pregătite pentru Specialiști</h2>
+
+            <div class="space-y-3">
+                <div class="p-4 bg-orange-50/70 border border-orange-200 rounded-xl">
+                    <h4 class="font-bold text-orange-950 text-sm mb-1">1. Pentru Neurologie / Medicină de Recuperare:</h4>
+                    <p class="text-xs sm:text-sm text-slate-700">
+                        „Având în vedere debordurile discale L3-L4, L4-L5 și L5-S1 cu contact radicular L4/L5 evidențiate la RMN, exercițiile de kinetoterapie pe care le fac zilnic acasă sunt suficiente pentru decompresie? Senzația ocazională de picioare amorțite sau tari se corelează cu rădăcinile L4-L5?”
+                    </p>
+                </div>
+
+                <div class="p-4 bg-amber-50/70 border border-amber-200 rounded-xl">
+                    <h4 class="font-bold text-amber-950 text-sm mb-1">2. Pentru Gastroenterologie:</h4>
+                    <p class="text-xs sm:text-sm text-slate-700">
+                        „Ecografiile arată constant meteorism abdominal sever pe cadrul colic, asociat cu colon iritabil (H. pylori fiind eradicat). Recomandați o schemă ghidată Low-FODMAP, un test SIBO sau probiotice specifice pentru balonare? Polipul colecistic de 3.2-3.9 mm rămâne stabil la monitorizarea anuală?”
+                    </p>
+                </div>
+
+                <div class="p-4 bg-sky-50/70 border border-sky-200 rounded-xl">
+                    <h4 class="font-bold text-sky-950 text-sm mb-1">3. Pentru Cardiologie & Medicină Internă:</h4>
+                    <p class="text-xs sm:text-sm text-slate-700">
+                        „Bilanțul din Septembrie 2026 arată că LDL a scăzut la 123 mg/dL, Colesterolul Total la 180 mg/dL, iar Lp(a) este excelentă (4.8 nmol/L). Menținem doza actuală de statină (Sortis) și Aspenter? CK este 74 U/L, deci toleranța musculară este perfectă.”
+                    </p>
+                </div>
+
+                <div class="p-4 bg-purple-50/70 border border-purple-200 rounded-xl">
+                    <h4 class="font-bold text-purple-950 text-sm mb-1">4. Pentru Nutriție & Diabet:</h4>
+                    <p class="text-xs sm:text-sm text-slate-700">
+                        „Indicele HOMA-IR este 2.2, semnalând rezistență timpurie la insulină pe fond de greutate (96 kg) și stres prelungit. Ce măsuri de reducere ponderală treptată (spre 85 kg) pot susține cel mai eficient normalizarea HOMA-IR alături de Berberină?”
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="text-center text-xs text-slate-400 py-4 border-t border-slate-200">
+        Dosar Medical Interactiv • Pacient • Toate datele sunt extrase fidel din buletinele Regina Maria & Ponderas (2018-2026).
+    </footer>
+
+</div>
+
+<script>
+    // Tab switching
+    function showTab(tabId, btn) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+        document.getElementById('tab-' + tabId).classList.remove('hidden');
+
+        document.querySelectorAll('.btn-tab').forEach(b => {
+            b.classList.remove('active');
+            b.classList.add('text-slate-600');
+        });
+        btn.classList.add('active');
+        btn.classList.remove('text-slate-600');
+
+        if (tabId === 'grafice') {
+            initCharts();
+        }
+    }
+
+    // Record accordion toggle
+    function toggleDetails(header) {
+        const panel = header.nextElementSibling;
+        panel.classList.toggle('hidden');
+    }
+
+    // Category filter
+    function filterCategory(cat, btn) {
+        document.querySelectorAll('.btn-filter').forEach(b => {
+            b.classList.remove('bg-blue-900', 'text-white', 'active');
+            b.classList.add('bg-slate-100', 'text-slate-700');
+        });
+        btn.classList.add('bg-blue-900', 'text-white', 'active');
+        btn.classList.remove('bg-slate-100', 'text-slate-700');
+
+        // Filter synthesis cards
+        document.querySelectorAll('#cardsGrid > div').forEach(card => {
+            if (cat === 'all' || card.getAttribute('data-category') === cat) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+
+        // Filter timeline items
+        document.querySelectorAll('.record-item').forEach(item => {
+            const categories = item.getAttribute('data-cat') || '';
+            if (cat === 'all' || categories.includes(cat)) {
+                item.style.display = 'block';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    }
+
+    // Search filter
+    function filterSearch() {
+        const term = document.getElementById('searchInput').value.toLowerCase();
+        document.querySelectorAll('.record-item').forEach(item => {
+            const text = item.innerText.toLowerCase();
+            if (text.includes(term)) {
+                item.style.display = 'block';
+                if (term.length > 2) {
+                    item.querySelector('.details-panel')?.classList.remove('hidden');
+                }
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    }
+
+    // Chart.js initialization
+    let chartsLoaded = false;
+    function initCharts() {
+        if (chartsLoaded) return;
+        chartsLoaded = true;
+
+        // 1. Vitamina D Chart
+        new Chart(document.getElementById('chartVitD'), {
+            type: 'line',
+            data: {
+                labels: ['21.08.2025', '23.01.2026', '21.09.2026'],
+                datasets: [{
+                    label: 'Vitamina D (ng/mL)',
+                    data: [34.5, 22.9, 44.6],
+                    borderColor: '#f59e0b',
+                    backgroundColor: 'rgba(245, 158, 11, 0.12)',
+                    fill: true,
+                    tension: 0.3,
+                    pointRadius: 6,
+                    pointBackgroundColor: '#d97706'
+                }]
+            },
+            options: { responsive: true, maintainAspectRatio: false }
+        });
+
+        // 2. HOMA-IR Chart
+        new Chart(document.getElementById('chartHoma'), {
+            type: 'line',
+            data: {
+                labels: ['21.08.2025', '23.01.2026', '21.09.2026'],
+                datasets: [{
+                    label: 'HOMA-IR (Rezistență la insulină)',
+                    data: [2.1, 2.0, 2.2],
+                    borderColor: '#7c3aed',
+                    backgroundColor: 'rgba(124, 58, 237, 0.1)',
+                    fill: true,
+                    tension: 0.2,
+                    pointRadius: 6
+                }]
+            },
+            options: { responsive: true, maintainAspectRatio: false }
+        });
+
+        // 3. Lipide Chart
+        new Chart(document.getElementById('chartLipide'), {
+            type: 'line',
+            data: {
+                labels: ['2018', '2021', '2023', '2025', 'Ian 2026', 'Sept 2026'],
+                datasets: [
+                    {
+                        label: 'Colesterol Total (mg/dL)',
+                        data: [204.7, 206.9, 219.4, 191, 212, 180],
+                        borderColor: '#ea580c',
+                        tension: 0.2
+                    },
+                    {
+                        label: 'LDL Colesterol (mg/dL)',
+                        data: [163.9, 147.7, 149.4, 130, 149, 123],
+                        borderColor: '#2563eb',
+                        tension: 0.2
+                    }
+                ]
+            },
+            options: { responsive: true, maintainAspectRatio: false }
+        });
+
+        // 4. Inflamatie Chart
+        new Chart(document.getElementById('chartInflamatie'), {
+            type: 'line',
+            data: {
+                labels: ['2020', '2021', '2023', '2025', 'Ian 2026', 'Sept 2026'],
+                datasets: [
+                    {
+                        label: 'VSH (mm/h) - norm <15',
+                        data: [13, 3, 4, 4, 7, 7],
+                        borderColor: '#0284c7',
+                        tension: 0.2
+                    },
+                    {
+                        label: 'CRP (mg/dL) - norm <=0.5',
+                        data: [0.17, 0.13, 0.13, 0.08, 0.11, 0.11],
+                        borderColor: '#ef4444',
+                        tension: 0.2
+                    }
+                ]
+            },
+            options: { responsive: true, maintainAspectRatio: false }
+        });
+    }
+
+    // Vit D Calculator
+    function computeVitD() {
+        const cur = parseFloat(document.getElementById('calc-current').value);
+        const tgt = parseFloat(document.getElementById('calc-target').value);
+        const out = document.getElementById('calc-output');
+
+        if (cur >= 40) {
+            out.innerHTML = `
+                <p><strong>Status Excelent:</strong> Nivelul dumneavoastră este deja <strong>OPTIM (${cur} ng/mL)</strong>!</p>
+                <p>• <strong>Doză de întreținere pentru iarnă:</strong> 1.500 UI - 2.000 UI / zi de Vitamina D3 cu K2.</p>
+                <p>• Retestare recomandată: ianuarie - februarie 2027.</p>
+            `;
+            out.className = "p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-xs sm:text-sm text-emerald-900 space-y-2";
+        } else {
+            const deficit = tgt - cur;
+            out.innerHTML = `
+                <p><strong>Deficit de recuperat:</strong> ${deficit.toFixed(1)} ng/mL</p>
+                <p>• <strong>Doză de atac:</strong> 3.000 - 4.000 UI / zi timp de 6-8 săptămâni.</p>
+            `;
+            out.className = "p-4 bg-amber-50 border border-amber-200 rounded-xl text-xs sm:text-sm text-amber-900 space-y-2";
+        }
+    }
+
+    // Journal functionality
+    document.getElementById('logDate').valueAsDate = new Date();
+
+    function addJournalEntry() {
+        const date = document.getElementById('logDate').value;
+        const back = document.getElementById('rngBack').value;
+        const bloat = document.getElementById('rngBloat').value;
+        const legs = document.getElementById('rngLegs').value;
+        const notes = document.getElementById('logNotes').value;
+
+        if (!date) return;
+
+        const entry = { date, back, bloat, legs, notes };
+        let entries = JSON.parse(localStorage.getItem('sb_medical_journal') || '[]');
+        entries.unshift(entry);
+        localStorage.setItem('sb_medical_journal', JSON.stringify(entries));
+
+        renderJournal();
+        document.getElementById('logNotes').value = '';
+    }
+
+    function renderJournal() {
+        const list = document.getElementById('journalEntriesList');
+        let entries = JSON.parse(localStorage.getItem('sb_medical_journal') || '[]');
+
+        if (entries.length === 0) {
+            list.innerHTML = '<p class="text-xs text-slate-400 py-3">Nu există înregistrări salvate încă. Adăugați una din formularul alăturat.</p>';
+            return;
+        }
+
+        list.innerHTML = entries.map(item => `
+            <div class="p-3 bg-slate-50 border border-slate-200 rounded-lg text-xs space-y-1">
+                <div class="flex justify-between font-bold text-slate-800">
+                    <span>📅 ${item.date}</span>
+                    <span class="text-slate-500 font-normal">Spate: <strong>${item.back}/10</strong> | Balonare: <strong>${item.bloat}/10</strong> | Picioare: <strong>${item.legs}/10</strong></span>
+                </div>
+                ${item.notes ? `<div class="text-slate-600 italic">💬 ${item.notes}</div>` : ''}
+            </div>
+        `).join('');
+    }
+
+    function clearJournal() {
+        if (confirm("Sigur doriți să ștergeți toate înregistrările din jurnal?")) {
+            localStorage.removeItem('sb_medical_journal');
+            renderJournal();
+        }
+    }
+
+    renderJournal();
+</script>
+
+</body>
+</html>
